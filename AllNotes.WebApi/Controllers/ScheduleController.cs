@@ -27,6 +27,34 @@ namespace AllNotes.WebApi.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet("GetSchedule/{id}")]
+        public async Task<ObjectResult> GetScheduleAsync([FromRoute] int id)
+        {
+            Schedule result = await _scheduleServices.GetByIdAsync(id);
+
+            return Ok(result);
+        }
+
+        [HttpPost("AddSchedule")]
+        public async Task<ObjectResult> AddScheduleAsync([FromBody] string date)
+        {
+
+            Schedule result = await _scheduleServices.CreateAsync(date);
+
+            return Ok(result);
+        }
+
+        [HttpDelete("DeleteSchedule/{id}")]
+        public async Task<ObjectResult> DeleteSchedule([FromRoute] int id)
+        {
+            Schedule result = await _scheduleServices.GetByIdAsync(id);
+            await _scheduleServices.DeleteAsync(result);
+
+            return Ok(result);
+        }
+
+
         // GET: api/Schedule
         //[HttpGet]
         //public IEnumerable<string> Get()
