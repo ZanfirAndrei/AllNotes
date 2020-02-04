@@ -4,14 +4,16 @@ using AllNotes.Domain.EF.AllNotesContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AllNotes.WebApi.Migrations
 {
     [DbContext(typeof(AllNotesDbContext))]
-    partial class AllNotesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200202161746_brismigration")]
+    partial class brismigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,8 +189,8 @@ namespace AllNotes.WebApi.Migrations
                     b.Property<int>("Repeats")
                         .HasColumnType("int");
 
-                    b.Property<float>("Weights")
-                        .HasColumnType("real");
+                    b.Property<int>("Weights")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

@@ -18,11 +18,39 @@ namespace AllNotes.Services.Services
             WrapperRepository = wrapperRepository;
         }
 
-        public async Task<IList<Schedule>> GetAllAsync() 
+        public async Task<IList<Schedule>> GetAllAsync()
         {
             var result = await WrapperRepository.Schedule.GetAllAsync();
 
             return result;
-    }
+        }
+
+        public async Task<Schedule> GetByIdAsync(int id)
+        {
+            var result = await WrapperRepository.Schedule.GetByIdAsync(id);
+
+            return result;
+        }
+
+        public async Task<Schedule> CreateAsync(string date)
+        {
+            Schedule schedule = new Schedule();
+            schedule.Date = DateTime.Parse(date);
+            var result = await WrapperRepository.Schedule.CreateAsync(schedule);
+            await base.CommitChanges();
+
+            return result;   
+        }
+
+        public async Task<Schedule> DeleteAsync(Schedule schedule)
+        {
+            //Schedule schedule = await GetByIdAsync(id);
+            var result = WrapperRepository.Schedule.Delete(schedule);
+            await base.CommitChanges();
+
+            return result;
+        }
+
+
     }
 }
