@@ -53,44 +53,48 @@ namespace AllNotes.WebApi.Controllers
         [AllowAnonymous]
         public async Task<ObjectResult> GetExercisesAsync([FromRoute] int id)
         {
-            Exercise result = await _exerciseServices.GetByIdAsync(id);
+            ExerciseDto result = await _exerciseServices.GetByIdAsync(id);
             return Ok(result);
         }
 
         [HttpPost("AddExercise")]
         [AllowAnonymous]
-        public async Task<ObjectResult> AddExercisesAsync([FromBody] string name, string desc, int categoryId)
+
+        public async Task<ObjectResult> AddExercisesAsync([FromBody] ExercisesDto dto)
+
         {
-            Exercise result = await _exerciseServices.CreateAsync(name,desc,categoryId);
+            ExerciseDto result = await _exerciseServices.CreateAsync( dto );
             return Ok(result);
         }
 
         [HttpPut("UpdateExercise/{id}")]
         [AllowAnonymous]
-        public async Task<ObjectResult> UpdateExercisesAsync([FromRoute] int id, [FromBody] string name, string description, int categoryId)
+
+        public async Task<ObjectResult> UpdateExercisesAsync([FromRoute] int id, [FromBody] ExercisesDto dto)
         {
-            Exercise result = await _exerciseServices.GetByIdAsync(id);
+            ExerciseDto result = await _exerciseServices.GetByIdAsync(id);
             if (result == null)
             {
                 return BadRequest(new { message = "Exercise not available" });
             }
 
-            var exercise = new Exercise { Id = result.Id, Name = name, Description = description, CategoryId = categoryId };
-            await _exerciseServices.UpdateAsync(exercise);
+            //var exercise = new Exercise { Id = result.Id, Name = name, Description = description, CategoryId = categoryId };
+            var res = await _exerciseServices.UpdateAsync(dto);
 
-            return Ok(result);
+            return Ok(res);
         }
 
         [HttpDelete("DeleteExercise/{id}")]
         [AllowAnonymous]
         public async Task<ObjectResult> DeleteExercises([FromRoute] int id)
         {
-            Exercise result = await _exerciseServices.GetByIdAsync(id);
+            ExerciseDto result = await _exerciseServices.GetByIdAsync(id);
             await _exerciseServices.DeleteAsync(result);
 
             return Ok(result);
         }
         #endregion
+
 
 
         #region Categories
@@ -146,7 +150,6 @@ namespace AllNotes.WebApi.Controllers
         //    return Ok(result);
         //}
         #endregion
-
 
         #region Series
         //[HttpGet("GetSeries")]

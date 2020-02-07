@@ -27,6 +27,7 @@ namespace AllNotes.WebApi.Controllers
         
         [HttpGet("GetSchedules")]
         [AllowAnonymous]
+        //[Authorize(Policy = "User")]
         //[Authorize]
         public async Task<ObjectResult> GetAllSchedulesAsync()
         {
@@ -43,6 +44,7 @@ namespace AllNotes.WebApi.Controllers
 
         [HttpGet("GetSchedules/{id}")]
         [AllowAnonymous]
+        //[Authorize]
         public async Task<ObjectResult> GetScheduleAsync([FromRoute] int id)
         {
             Schedule result = await _scheduleServices.GetByIdAsync(id);

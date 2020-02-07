@@ -1,4 +1,5 @@
-﻿using AllNotes.Domain.EF.Wrapper;
+﻿using AllNotes.Domain.Dtos;
+using AllNotes.Domain.EF.Wrapper;
 using AllNotes.Domain.Models.Memo;
 using System;
 using System.Collections.Generic;
@@ -10,10 +11,10 @@ namespace AllNotes.Services.IServices
     public interface ICheckBoxServices : IBaseServices
     {
         IWrapperRepository WrapperRepository { get; }
-        Task<IList<CheckBox>> GetAllAsync();
-        Task<CheckBox> GetByIdAsync(int id);
-        Task<CheckBox> CreateAsync(string name, int checkListId);
-        Task<CheckBox> UpdateAsync(CheckBox note);
-        Task<CheckBox> DeleteAsync(CheckBox note);
+        Task<IList<CheckBoxDto>> GetAllAsync();
+        Task<CheckBoxDto> GetByIdAsync(int id);
+        Task<CheckBoxDto> CreateAsync(string name, int checkListId);
+        Task<CheckBoxDto> UpdateAsync(CheckBoxDto note);
+        Task<CheckBoxDto> DeleteAsync(CheckBoxDto note);
     }
 }

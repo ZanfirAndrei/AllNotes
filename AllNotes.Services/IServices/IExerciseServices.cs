@@ -1,4 +1,5 @@
-﻿using AllNotes.Domain.EF.Wrapper;
+﻿using AllNotes.Domain.Dtos;
+using AllNotes.Domain.EF.Wrapper;
 using AllNotes.Domain.Models.Sport;
 using System;
 using System.Collections.Generic;
@@ -10,10 +11,10 @@ namespace AllNotes.Services.IServices
     public interface IExerciseServices : IBaseServices
     {
         IWrapperRepository WrapperRepository { get; }
-        Task<IList<Exercise>> GetAllAsync();
-        Task<Exercise> GetByIdAsync(int id);
-        Task<Exercise> CreateAsync(string name,string description, int categoryId);
-        Task<Exercise> UpdateAsync(Exercise exercise);
-        Task<Exercise> DeleteAsync(Exercise exercise);
+        Task<IList<ExerciseDto>> GetAllAsync();
+        Task<ExerciseDto> GetByIdAsync(int id);
+        Task<ExerciseDto> CreateAsync(ExerciseDto exercise);
+        Task<ExerciseDto> UpdateAsync(ExerciseDto exercise);
+        Task<ExerciseDto> DeleteAsync(ExerciseDto exercise);
     }
 }

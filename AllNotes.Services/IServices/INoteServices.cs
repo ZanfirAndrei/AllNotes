@@ -1,4 +1,5 @@
-﻿using AllNotes.Domain.EF.Wrapper;
+﻿using AllNotes.Domain.Dtos;
+using AllNotes.Domain.EF.Wrapper;
 using AllNotes.Domain.Models.Memo;
 using System;
 using System.Collections.Generic;

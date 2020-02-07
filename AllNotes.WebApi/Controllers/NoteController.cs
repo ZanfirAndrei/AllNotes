@@ -38,6 +38,7 @@ namespace AllNotes.WebApi.Controllers
         }
 
 
+        #region Notes
         [HttpGet("GetNotes")]
         [AllowAnonymous]
         public async Task<ObjectResult> GetAllNotesAsync()
@@ -58,10 +59,11 @@ namespace AllNotes.WebApi.Controllers
         [AllowAnonymous]
         public async Task<ObjectResult> GetNoteAsync([FromRoute] int id)
         {
-            Note result = await _noteServices.GetByIdAsync(id);
+            NoteDto result = await _noteServices.GetByIdAsync(id);
 
             return Ok(_mapper.Map<Note, Note>(result));
         }
+
 
         [HttpPost("AddNote")]
         [AllowAnonymous]
@@ -114,12 +116,12 @@ namespace AllNotes.WebApi.Controllers
 
         [HttpPut("UpdateNote/{id}")]
         [AllowAnonymous]
+
         public async Task<ObjectResult> UpdateNoteAsync([FromRoute] int id, [FromBody] NoteDto dto)
         {
             try
             {
                 var note = _mapper.Map<NoteDto, Note>(dto);
-
                 var userId = _userManager.GetUserId(User);
                 note.UserId = userId;
                 //string a = User.Identity.Name;
@@ -173,10 +175,13 @@ namespace AllNotes.WebApi.Controllers
         [AllowAnonymous]
         public async Task<ObjectResult> DeleteNote([FromRoute] int id)
         {
-            Note result = await _noteServices.GetByIdAsync(id);
+            NoteDto result = await _noteServices.GetByIdAsync(id);
             await _noteServices.DeleteAsync(result);
 
             return Ok(result);
         }
+
+        #endregion
+
     }
 }

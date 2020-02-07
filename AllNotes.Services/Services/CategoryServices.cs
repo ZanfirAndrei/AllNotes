@@ -1,4 +1,5 @@
-﻿using AllNotes.Domain.EF.AllNotesContext;
+﻿using AllNotes.Domain.Dtos;
+using AllNotes.Domain.EF.AllNotesContext;
 using AllNotes.Domain.EF.Wrapper;
 using AllNotes.Domain.Models.Sport;
 using AllNotes.Services.IServices;
@@ -18,36 +19,77 @@ namespace AllNotes.Services.Services
             WrapperRepository = wrapperRepository;
         }
 
-        public async Task<IList<Category>> GetAllAsync()
+        public async Task<IList<CategoryDto>> GetAllAsync()
         {
             var result = await WrapperRepository.Category.GetAllAsync();
 
-            return result;
+            List<CategoryDto> resultDto  = new List<CategoryDto>();
+
+            CategoryDto category;
+
+            if (result.Count > 0) { 
+                foreach( Category i in result)
+                {
+                    category = new CategoryDto()
+                    {
+                        Id = i.Id,
+                        Name = i.Name
+
+                    };
+
+                    resultDto.Add(category);
+                }
+                return resultDto;
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        public async Task<Category> GetByIdAsync(int id)
+        public async Task<CategoryDto> GetByIdAsync(int id)
         {
             var result = await WrapperRepository.Category.GetByIdAsync(id);
 
-            return result;
+            CategoryDto categoryDto = new CategoryDto()
+            {
+                Id = result.Id,
+                Name = result.Name
+
+            };
+
+            return categoryDto;
         }
 
-        public async Task<Category> CreateAsync(string name)
+        public async Task<CategoryDto> CreateAsync(CategoryDto dto)
         {
             Category category = new Category();
-            category.Name = name;
+            category.Name = dto.Name;
             var result = await WrapperRepository.Category.CreateAsync(category);
             await base.CommitChanges();
 
-            return result;
+            CategoryDto categoryDto = new CategoryDto()
+            {
+                Id = result.Id,
+                Name = result.Name
+
+            };
+
+            return categoryDto;
         }
 
-        public async Task<Category> UpdateAsync(Category category)
+        public async Task<CategoryDto> UpdateAsync(CategoryDto dto)
         {
             var result = await WrapperRepository.Category.GetByIdAsync(category.Id);
-            result.Name = category.Name;
+            result.Name = dto.Name;
             await base.CommitChanges();
 
+            CategoryDto categoryDto = new CategoryDto()
+            {
+                Id = result.Id,
+                Name = result.Name
+
+            };
             return result;
         }
 

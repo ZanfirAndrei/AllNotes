@@ -45,6 +45,7 @@ namespace AllNotes.WebApi.Controllers
         [AllowAnonymous]
         public async Task<ObjectResult> GetAllCheckListsAsync()
         {
+
             try
             {
                 var result = await _checkListServices.GetAllAsync();
@@ -60,7 +61,7 @@ namespace AllNotes.WebApi.Controllers
         [AllowAnonymous]
         public async Task<ObjectResult> GetCheckListAsync([FromRoute] int id)
         {
-            CheckList result = await _checkListServices.GetByIdAsync(id);
+            CheckListDto result = await _checkListServices.GetByIdAsync(id);
 
             return Ok(_mapper.Map<CheckList, CheckListDto>(result));
         }
@@ -111,7 +112,6 @@ namespace AllNotes.WebApi.Controllers
             //{
             //    return BadRequest(new { message = ex.Message });
             //}
-
         }
 
         [HttpPut("UpdateCheckList/{id}")]
@@ -175,7 +175,7 @@ namespace AllNotes.WebApi.Controllers
         [AllowAnonymous]
         public async Task<ObjectResult> DeleteCheckList([FromRoute] int id)
         {
-            CheckList result = await _checkListServices.GetByIdAsync(id);
+            CheckListDto result = await _checkListServices.GetByIdAsync(id);
             await _checkListServices.DeleteAsync(result);
 
             return Ok(result);

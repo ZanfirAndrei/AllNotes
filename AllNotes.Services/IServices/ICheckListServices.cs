@@ -16,6 +16,7 @@ namespace AllNotes.Services.IServices
         Task<CheckList> CreateAsync(CheckList checkList);
         Task<CheckList> UpdateAsync(CheckList checkList);
         Task<CheckList> DeleteAsync(CheckList checkList);
+
     }
     
 }
