@@ -9,6 +9,10 @@ using AllNotes.Domain.EF.AllNotesContext;
 using AllNotes.Domain.Models.Memo;
 using AllNotes.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
+using AllNotes.Domain.Dtos;
+using Microsoft.AspNetCore.Identity;
+using AllNotes.Domain.Models;
 
 namespace AllNotes.WebApi.Controllers
 {
@@ -17,40 +21,95 @@ namespace AllNotes.WebApi.Controllers
     public class NoteController : ControllerBase
     {
         private readonly INoteServices _noteServices;
+        private readonly ICheckBoxServices _checkBoxServices;
+        private readonly IScheduleServices _scheduleServices;
+        private readonly UserManager<User> _userManager;
+        private readonly IMapper _mapper;
 
-        public NoteController(INoteServices noteServices)
+        public NoteController(INoteServices noteServices, 
+                              ICheckBoxServices checkBoxServices,
+                              IScheduleServices scheduleServices,
+                              IMapper mapper)
         {
             _noteServices = noteServices;
+            _checkBoxServices = checkBoxServices;
+            _scheduleServices = scheduleServices;
+            _mapper = mapper;
         }
 
-        // GET: api/Notes
+
         [HttpGet("GetNotes")]
         [AllowAnonymous]
         public async Task<ObjectResult> GetAllNotesAsync()
         {
-            IList<Note> result = await _noteServices.GetAllAsync();
-
-            return Ok(result);
+            try
+            {
+                var result = await _noteServices.GetAllAsync();
+                return Ok(_mapper.Map<IList<Note>, IList<NoteDto>>(result));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
-        // GET: api/Notes/5
+
         [HttpGet("GetNotes/{id}")]
         [AllowAnonymous]
         public async Task<ObjectResult> GetNoteAsync([FromRoute] int id)
         {
             Note result = await _noteServices.GetByIdAsync(id);
 
-            return Ok(result);
+            return Ok(_mapper.Map<Note, Note>(result));
         }
 
         [HttpPost("AddNote")]
         [AllowAnonymous]
-        public async Task<ObjectResult> AddNoteAsync([FromBody] string name, string description)
+        public async Task<ObjectResult> AddNoteAsync([FromBody] NoteDto dto)
         {
+            //Note result = await _noteServices.CreateAsync(name, description);
+            try
+            {
+                var note = _mapper.Map<NoteDto, Note>(dto);
 
-            Note result = await _noteServices.CreateAsync(name, description);
+                var userId = _userManager.GetUserId(User);
+                note.UserId = userId;
+                //string a = User.Identity.Name;
 
-            return Ok(result);
+                if (note.Schedule != null)
+                {
+                    var schedule = _scheduleServices.GetIdByDate(note.Schedule.Date);
+                    if (schedule != null)
+                    {
+                        note.ScheduleId = schedule.Id;
+                    }
+                    else
+                    {
+                        var resultS = await _scheduleServices.CreateAsync(note.Schedule.Date.ToString());
+                        note.ScheduleId = resultS.Id;
+                    }
+                }
+                else
+                {
+                    note.ScheduleId = null;
+                }
+
+                CheckList result = await _noteServices.CreateAsync(note);
+
+                if (result.CheckBoxes.Count > 0)
+                {
+                    foreach (CheckBoxDto i in dto.CheckBoxes)
+                    {
+                        await _checkBoxServices.CreateAsync(i.Name, result.Id);
+                    }
+                }
+
+                return Ok(_mapper.Map<CheckList, CheckListDto>(result));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPut("UpdateNote/{id}")]

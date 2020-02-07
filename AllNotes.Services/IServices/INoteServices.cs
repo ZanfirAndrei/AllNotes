@@ -12,7 +12,7 @@ namespace AllNotes.Services.IServices
         IWrapperRepository WrapperRepository { get; }
         Task<IList<Note>> GetAllAsync();
         Task<Note> GetByIdAsync(int id);
-        Task<Note> CreateAsync(string name, string description);
+        Task<Note> CreateAsync(Note note);
         Task<Note> UpdateAsync(Note note);
         Task<Note> DeleteAsync(Note note);
     }

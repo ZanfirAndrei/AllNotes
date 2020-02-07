@@ -142,7 +142,16 @@ namespace AllNotes.WebApi.Controllers
                     checkList.ScheduleId = null;
                 }
 
-                CheckList result = await _checkListServices.CreateAsync(checkList);
+                CheckList result = await _checkListServices.UpdateAsync(checkList);
+
+                IList<CheckBox> checkBoxes = await _checkBoxServices.GetAllAsync();
+                foreach (CheckBox i in checkBoxes)
+                {
+                    if (i.CheckListId == result.Id)
+                    {
+                        await _checkBoxServices.DeleteAsync(i);
+                    }
+                }
 
                 if (result.CheckBoxes.Count > 0)
                 {
@@ -158,18 +167,6 @@ namespace AllNotes.WebApi.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
-
-
-            //CheckList result = await _checkListServices.GetByIdAsync(id);
-            //if (result == null)
-            //{
-            //    return BadRequest(new { message = "CheckList not available" });
-            //}
-
-            //var checkList = new CheckList { Id = result.Id, Name = name , IsComplete = isComplete};
-            //await _checkListServices.UpdateAsync(checkList);
-
-            //return Ok(result);
         }
 
         [HttpDelete("DeleteCheckList/{id}")]

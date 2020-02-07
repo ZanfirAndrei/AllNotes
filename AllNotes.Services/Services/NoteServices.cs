@@ -32,12 +32,8 @@ namespace AllNotes.Services.Services
             return result;
         }
 
-        public async Task<Note> CreateAsync(string name, string description)
+        public async Task<Note> CreateAsync(Note note)
         {
-            Note note = new Note();
-            note.Name = name;
-            note.Description = description;
-            note.Timestamp = DateTime.Now;
             var result = await WrapperRepository.Note.CreateAsync(note);
             await base.CommitChanges();
 
