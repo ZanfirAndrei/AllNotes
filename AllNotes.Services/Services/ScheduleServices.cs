@@ -31,6 +31,20 @@ namespace AllNotes.Services.Services
 
             return result;
         }
+        
+        public async Task<Schedule> GetByDate(DateTime date)
+        {
+            var result = await WrapperRepository.Schedule.GetAllAsync();
+            foreach(var r in result)
+            {
+                if (System.DateTime.Equals(r.Date, date))
+                {
+                    return r;
+                }
+            }
+
+            return null;
+        }
 
         public async Task<Schedule> CreateAsync(string date)
         {
@@ -51,6 +65,9 @@ namespace AllNotes.Services.Services
             return result;
         }
 
-
+        public Task<Schedule> GetIdByDate(DateTime date)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

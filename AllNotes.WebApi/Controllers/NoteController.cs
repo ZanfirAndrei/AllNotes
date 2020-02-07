@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using AllNotes.Domain.EF.AllNotesContext;
 using AllNotes.Domain.Models.Memo;
 using AllNotes.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AllNotes.WebApi.Controllers
 {
@@ -23,7 +24,8 @@ namespace AllNotes.WebApi.Controllers
         }
 
         // GET: api/Notes
-        [HttpGet]
+        [HttpGet("GetNotes")]
+        [AllowAnonymous]
         public async Task<ObjectResult> GetAllNotesAsync()
         {
             IList<Note> result = await _noteServices.GetAllAsync();
@@ -32,7 +34,8 @@ namespace AllNotes.WebApi.Controllers
         }
 
         // GET: api/Notes/5
-        [HttpGet("{id}")]
+        [HttpGet("GetNotes/{id}")]
+        [AllowAnonymous]
         public async Task<ObjectResult> GetNoteAsync([FromRoute] int id)
         {
             Note result = await _noteServices.GetByIdAsync(id);
@@ -40,8 +43,9 @@ namespace AllNotes.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
-        public async Task<ObjectResult> AddCategoryAsync([FromBody] string name, string description)
+        [HttpPost("AddNote")]
+        [AllowAnonymous]
+        public async Task<ObjectResult> AddNoteAsync([FromBody] string name, string description)
         {
 
             Note result = await _noteServices.CreateAsync(name, description);
@@ -49,8 +53,9 @@ namespace AllNotes.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ObjectResult> UpdateCategoryAsync([FromRoute] int id, [FromBody] string name, string description)
+        [HttpPut("UpdateNote/{id}")]
+        [AllowAnonymous]
+        public async Task<ObjectResult> UpdateNoteAsync([FromRoute] int id, [FromBody] string name, string description)
         {
             Note result = await _noteServices.GetByIdAsync(id);
             if (result == null)
@@ -64,8 +69,9 @@ namespace AllNotes.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ObjectResult> DeleteCategory([FromRoute] int id)
+        [HttpDelete("DeleteNote/{id}")]
+        [AllowAnonymous]
+        public async Task<ObjectResult> DeleteNote([FromRoute] int id)
         {
             Note result = await _noteServices.GetByIdAsync(id);
             await _noteServices.DeleteAsync(result);

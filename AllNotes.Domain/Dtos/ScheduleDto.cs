@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AllNotes.Models
+namespace AllNotes.Domain.Dtos
 {
     public class ScheduleDto
     {

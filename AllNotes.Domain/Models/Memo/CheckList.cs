@@ -11,7 +11,7 @@ namespace AllNotes.Domain.Models.Memo
         public DateTime TimeStamp { get; set; }
         public bool IsComplete { get; set; }
         public int? ScheduleId { get; set; }
-        public string? UserId { get; set; }
+        public string UserId { get; set; }
         public virtual User User { get; set; }
         public virtual Schedule Schedule { get; set; }
         public virtual ICollection<CheckBox> CheckBoxes { get; set; }

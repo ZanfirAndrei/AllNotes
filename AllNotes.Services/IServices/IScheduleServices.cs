@@ -14,5 +14,6 @@ namespace AllNotes.Services.IServices
         Task<Schedule> GetByIdAsync(int id);
         Task<Schedule> CreateAsync(string dateTime);
         Task<Schedule> DeleteAsync(Schedule schedule);
+        Task<Schedule> GetIdByDate(DateTime date);
     }
 }

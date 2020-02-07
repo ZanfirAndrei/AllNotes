@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AllNotes.Domain.EF.AllNotesContext;
 using AllNotes.Domain.EF.Users;
 using AllNotes.Domain.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -100,6 +101,7 @@ namespace AllNotes.WebApi
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             }).AddCookie();
 
+            services.AddAutoMapper(typeof(Startup));
 
             //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>

@@ -2,10 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AllNotes.Domain.Dtos;
+using AllNotes.Domain.Models;
 using AllNotes.Domain.Models.Memo;
-using AllNotes.Models;
 using AllNotes.Services.IServices;
+using AllNotes.Services.Services;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AllNotes.WebApi.Controllers
@@ -16,60 +21,159 @@ namespace AllNotes.WebApi.Controllers
     {
         private readonly ICheckListServices _checkListServices;
         private readonly ICheckBoxServices _checkBoxServices;
+        private readonly IScheduleServices _scheduleServices;
+        private readonly UserManager<User> _userManager;
+        private readonly IMapper _mapper;
 
 
         public CheckListController(ICheckListServices checkListServices,
-                                  ICheckBoxServices checkBoxServices)
+                                   ICheckBoxServices checkBoxServices,
+                                   IScheduleServices scheduleServices,
+                                   IMapper mapper)
         {
             _checkListServices = checkListServices;
             _checkBoxServices = checkBoxServices;
+            _scheduleServices = scheduleServices;
+            _mapper = mapper;
         }
 
 
         #region CheckList
         [HttpGet("GetCheckLists")]
+        [AllowAnonymous]
         public async Task<ObjectResult> GetAllCheckListsAsync()
         {
-            IList<CheckList> result = await _checkListServices.GetAllAsync();
-
-            return Ok(result);
+            try
+            {
+                var result = await _checkListServices.GetAllAsync();
+                return Ok(_mapper.Map<IList<CheckList>, IList<CheckList>>(result));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpGet("GetCheckLists/{id}")]
+        [AllowAnonymous]
         public async Task<ObjectResult> GetCheckListAsync([FromRoute] int id)
         {
             CheckList result = await _checkListServices.GetByIdAsync(id);
 
-            return Ok(result);
+            return Ok(_mapper.Map<CheckList, CheckListDto>(result));
         }
 
         [HttpPost("AddCheckList")]
+        [AllowAnonymous]
         public async Task<ObjectResult> AddCheckListAsync([FromBody] CheckListDto dto)
         {
+            try
+            {
+                var checkList = _mapper.Map<CheckListDto, CheckList>(dto);
 
+                var userId = _userManager.GetUserId(User);
+                checkList.UserId = userId;
+                //string a = User.Identity.Name;
 
+                if (checkList.Schedule != null)
+                {
+                    var schedule = _scheduleServices.GetIdByDate(checkList.Schedule.Date);
+                    if (schedule != null)
+                    {
+                        checkList.ScheduleId = schedule.Id;
+                    }
+                    else
+                    {
+                        var resultS = await _scheduleServices.CreateAsync(checkList.Schedule.Date.ToString());
+                        checkList.ScheduleId = resultS.Id;
+                    }
+                }
+                else
+                {
+                    checkList.ScheduleId = null;
+                }
+                
+                CheckList result = await _checkListServices.CreateAsync(checkList);
+                
+                if(result.CheckBoxes.Count > 0)
+                {
+                    foreach (CheckBoxDto i in dto.CheckBoxes)
+                    {
+                        await _checkBoxServices.CreateAsync(i.Name, result.Id);
+                    }
+                }
 
-            CheckList result = await _checkListServices.CreateAsync(dto);
+                return Ok(_mapper.Map<CheckList, CheckListDto>(result));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
 
-            return Ok(result);
         }
 
         [HttpPut("UpdateCheckList/{id}")]
-        public async Task<ObjectResult> UpdateCheckListAsync([FromRoute] int id, [FromBody] string name, bool isComplete)
+        [AllowAnonymous]
+        public async Task<ObjectResult> UpdateCheckListAsync([FromRoute] int id, [FromBody] CheckListDto dto)
         {
-            CheckList result = await _checkListServices.GetByIdAsync(id);
-            if (result == null)
+            try
             {
-                return BadRequest(new { message = "CheckList not available" });
+                var checkList = _mapper.Map<CheckListDto, CheckList>(dto);
+
+                var userId = _userManager.GetUserId(User);
+                checkList.UserId = userId;
+                //string a = User.Identity.Name;
+
+                if (checkList.Schedule != null)
+                {
+                    var schedule = _scheduleServices.GetIdByDate(checkList.Schedule.Date);
+                    if (schedule != null)
+                    {
+                        checkList.ScheduleId = schedule.Id;
+                    }
+                    else
+                    {
+                        var resultS = await _scheduleServices.CreateAsync(checkList.Schedule.Date.ToString());
+                        checkList.ScheduleId = resultS.Id;
+                    }
+                }
+                else
+                {
+                    checkList.ScheduleId = null;
+                }
+
+                CheckList result = await _checkListServices.CreateAsync(checkList);
+
+                if (result.CheckBoxes.Count > 0)
+                {
+                    foreach (CheckBoxDto i in dto.CheckBoxes)
+                    {
+                        await _checkBoxServices.CreateAsync(i.Name, result.Id);
+                    }
+                }
+
+                return Ok(_mapper.Map<CheckList, CheckListDto>(result));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
 
-            var checkList = new CheckList { Id = result.Id, Name = name , IsComplete = isComplete};
-            await _checkListServices.UpdateAsync(checkList);
 
-            return Ok(result);
+            //CheckList result = await _checkListServices.GetByIdAsync(id);
+            //if (result == null)
+            //{
+            //    return BadRequest(new { message = "CheckList not available" });
+            //}
+
+            //var checkList = new CheckList { Id = result.Id, Name = name , IsComplete = isComplete};
+            //await _checkListServices.UpdateAsync(checkList);
+
+            //return Ok(result);
         }
 
         [HttpDelete("DeleteCheckList/{id}")]
+        [AllowAnonymous]
         public async Task<ObjectResult> DeleteCheckList([FromRoute] int id)
         {
             CheckList result = await _checkListServices.GetByIdAsync(id);
@@ -81,54 +185,57 @@ namespace AllNotes.WebApi.Controllers
 
 
         #region CheckBox
-        [HttpGet("GetCheckBoxes")]
-        public async Task<ObjectResult> GetAllBoxesAsync()
-        {
-            IList<CheckBox> result = await _checkBoxServices.GetAllAsync();
+        //[HttpGet("GetCheckBoxes")]
+        //[AllowAnonymous]
+        //public async Task<ObjectResult> GetAllBoxesAsync()
+        //{
+        //    IList<CheckBox> result = await _checkBoxServices.GetAllAsync();
 
-            return Ok(result);
-        }
+        //    return Ok(result);
+        //}
 
-        [HttpGet("GetCheckBoxes/{id}")]
-        public async Task<ObjectResult> GetCheckBoxAsync([FromRoute] int id)
-        {
-            CheckBox result = await _checkBoxServices.GetByIdAsync(id);
+        //[HttpGet("GetCheckBoxes/{id}")]
+        //[AllowAnonymous]
+        //public async Task<ObjectResult> GetCheckBoxAsync([FromRoute] int id)
+        //{
+        //    CheckBox result = await _checkBoxServices.GetByIdAsync(id);
 
-            return Ok(result);
-        }
+        //    return Ok(result);
+        //}
 
-        [HttpPost("AddCheckBox")]
-        public async Task<ObjectResult> AddCheckBoxAsync([FromBody] string name, int checkListId)
-        {
+        //[HttpPost("AddCheckBox")]
+        //public async Task<ObjectResult> AddCheckBoxAsync([FromBody] string name, int checkListId)
+        //{
 
-            CheckBox result = await _checkBoxServices.CreateAsync(name,checkListId);
+        //    CheckBox result = await _checkBoxServices.CreateAsync(name,checkListId);
 
-            return Ok(result);
-        }
+        //    return Ok(result);
+        //}
 
-        [HttpPut("UpdateCheckBox/{id}")]
-        public async Task<ObjectResult> UpdateCheckBoxAsync([FromRoute] int id, [FromBody] string name, bool isChecked)
-        {
-            CheckBox result = await _checkBoxServices.GetByIdAsync(id);
-            if (result == null)
-            {
-                return BadRequest(new { message = "CheckBox not available" });
-            }
+        //[HttpPut("UpdateCheckBox/{id}")]
+        //public async Task<ObjectResult> UpdateCheckBoxAsync([FromRoute] int id, [FromBody] string name, bool isChecked)
+        //{
+        //    CheckBox result = await _checkBoxServices.GetByIdAsync(id);
+        //    if (result == null)
+        //    {
+        //        return BadRequest(new { message = "CheckBox not available" });
+        //    }
 
-            var checkBox = new CheckBox { Id = result.Id, Name = name, IsChecked = isChecked};
-            await _checkBoxServices.UpdateAsync(checkBox);
+        //    var checkBox = new CheckBox { Id = result.Id, Name = name, IsChecked = isChecked};
+        //    await _checkBoxServices.UpdateAsync(checkBox);
 
-            return Ok(result);
-        }
+        //    return Ok(result);
+        //}
 
-        [HttpDelete("DeleteCheckBox/{id}")]
-        public async Task<ObjectResult> DeleteCheckBox([FromRoute] int id)
-        {
-            CheckBox result = await _checkBoxServices.GetByIdAsync(id);
-            await _checkBoxServices.DeleteAsync(result);
+        //[HttpDelete("DeleteCheckBox/{id}")]
+        //[AllowAnonymous]
+        //public async Task<ObjectResult> DeleteCheckBox([FromRoute] int id)
+        //{
+        //    CheckBox result = await _checkBoxServices.GetByIdAsync(id);
+        //    await _checkBoxServices.DeleteAsync(result);
 
-            return Ok(result);
-        }
+        //    return Ok(result);
+        //}
         #endregion
     }
 }
