@@ -100,7 +100,7 @@ namespace AllNotes.WebApi
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             }).AddCookie();
 
-
+       
             //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             //.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
             //{
@@ -111,7 +111,7 @@ namespace AllNotes.WebApi
             //services.AddIdentity<IdentityUser, IdentityRole>();
 
             //services.AddIdentityCore<IdentityUser<AppUser>>(options => { });
-            
+
 
             //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             //    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>

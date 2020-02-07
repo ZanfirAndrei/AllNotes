@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AllNotes.Models
+namespace AllNotes.Domain.Dtos
 {
-    public class ScheduleDto
+    public class CategoryDto
     {
         public int Id { get; set; }
-        public DateTime Date { get; set; }
+        public string Name { get; set; }
     }
 }

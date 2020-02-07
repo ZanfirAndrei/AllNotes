@@ -22,9 +22,9 @@ namespace AllNotes.WebApi.Controllers
         }
         
         [HttpGet("GetSchedules")]
-
+        [AllowAnonymous]
         //[Authorize(Policy = "User")]
-        [Authorize]
+        //[Authorize]
         public async Task<ObjectResult> GetAllSchedulesAsync()
         {
             try
@@ -39,6 +39,7 @@ namespace AllNotes.WebApi.Controllers
         }
 
         [HttpGet("GetSchedules/{id}")]
+        [Authorize]
         public async Task<ObjectResult> GetScheduleAsync([FromRoute] int id)
         {
             Schedule result = await _scheduleServices.GetByIdAsync(id);
@@ -47,6 +48,7 @@ namespace AllNotes.WebApi.Controllers
         } 
 
         [HttpPost("AddSchedule")]
+        [AllowAnonymous]
         public async Task<ObjectResult> AddScheduleAsync([FromBody] string date)
         {
             try 
@@ -61,6 +63,7 @@ namespace AllNotes.WebApi.Controllers
         }
 
         [HttpDelete("DeleteSchedule/{id}")]
+        [AllowAnonymous]
         public async Task<ObjectResult> DeleteSchedule([FromRoute] int id)
         {
             try

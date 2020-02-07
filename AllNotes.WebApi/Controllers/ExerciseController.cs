@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AllNotes.Domain.Dtos;
 using AllNotes.Domain.Models.Sport;
 using AllNotes.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,46 +32,51 @@ namespace AllNotes.WebApi.Controllers
 
         #region Categories
         [HttpGet("GetCategories")]
+        [AllowAnonymous]
         public async Task<ObjectResult> GetAllCategoriesAsync()
         {
-            IList<Category> result = await _categoryServices.GetAllAsync();
+            IList<CategoryDto> result = await _categoryServices.GetAllAsync();
 
             return Ok(result);
         }
 
         [HttpGet("GetCategories/{id}")]
+        [AllowAnonymous]
         public async Task<ObjectResult> GetCategoryAsync([FromRoute] int id)
         {
-            Category result = await _categoryServices.GetByIdAsync(id);
+            CategoryDto result = await _categoryServices.GetByIdAsync(id);
 
             return Ok(result);
         }
 
-        [HttpPost("AddCategory")]
-        public async Task<ObjectResult> AddCategoryAsync([FromBody] string name)
-        {
+        //[HttpPost("AddCategory")]
+        //[AllowAnonymous]
+        //public async Task<ObjectResult> AddCategoryAsync([FromBody] string name)
+        //{
 
-            Category result = await _categoryServices.CreateAsync(name);
+        //    Category result = await _categoryServices.CreateAsync(name);
 
-            return Ok(result);
-        }
+        //    return Ok(result);
+        //}
 
         [HttpPut("UpdateCategory/{id}")]
-        public async Task<ObjectResult> UpdateCategoryAsync([FromRoute] int id, [FromBody] string name)
+        [AllowAnonymous]
+        public async Task<ObjectResult> UpdateCategoryAsync([FromRoute] int id, [FromBody] CategoryDto dto)
         {
-            Category result = await _categoryServices.GetByIdAsync(id);
+            CategoryDto result = await _categoryServices.GetByIdAsync(id);
             if (result == null)
             {
                 return BadRequest(new { message = "Categry not available" });
             }
 
-            var category = new Category { Id = result.Id, Name = name};
-            await _categoryServices.UpdateAsync(category);
+            //var category = new Category { Id = result.Id, Name = name};
+            var res = await _categoryServices.UpdateAsync(dto);
 
-            return Ok(result);
+            return Ok(res);
         }
 
         [HttpDelete("DeleteCategory/{id}")]
+        [AllowAnonymous]
         public async Task<ObjectResult> DeleteCategory([FromRoute] int id)
         {
             Category result = await _categoryServices.GetByIdAsync(id);
@@ -82,45 +89,50 @@ namespace AllNotes.WebApi.Controllers
 
         #region Exercise
         [HttpGet("GetExercises")]
+        [AllowAnonymous]
         public async Task<ObjectResult> GetAllExercisesAsync()
         {
-            IList<Exercise> result = await _exerciseServices.GetAllAsync();
+            IList<ExerciseDto> result = await _exerciseServices.GetAllAsync();
             return Ok(result);
         }
 
         [HttpGet("GetExercises/{id}")]
+        [AllowAnonymous]
         public async Task<ObjectResult> GetExercisesAsync([FromRoute] int id)
         {
-            Exercise result = await _exerciseServices.GetByIdAsync(id);
+            ExerciseDto result = await _exerciseServices.GetByIdAsync(id);
             return Ok(result);
         }
 
         [HttpPost("AddExercise")]
-        public async Task<ObjectResult> AddExercisesAsync([FromBody] string name, string desc, int categoryId)
+        [AllowAnonymous]
+        public async Task<ObjectResult> AddExercisesAsync([FromBody] ExercisesDto dto)
         {
-            Exercise result = await _exerciseServices.CreateAsync(name,desc,categoryId);
+            ExerciseDto result = await _exerciseServices.CreateAsync( dto );
             return Ok(result);
         }
 
         [HttpPut("UpdateExercise/{id}")]
-        public async Task<ObjectResult> UpdateExercisesAsync([FromRoute] int id, [FromBody] string name, string description, int categoryId)
+        [AllowAnonymous]
+        public async Task<ObjectResult> UpdateExercisesAsync([FromRoute] int id, [FromBody] ExercisesDto dto)
         {
-            Exercise result = await _exerciseServices.GetByIdAsync(id);
+            ExerciseDto result = await _exerciseServices.GetByIdAsync(id);
             if (result == null)
             {
                 return BadRequest(new { message = "Exercise not available" });
             }
 
-            var exercise = new Exercise { Id = result.Id, Name = name, Description = description, CategoryId = categoryId };
-            await _exerciseServices.UpdateAsync(exercise);
+            //var exercise = new Exercise { Id = result.Id, Name = name, Description = description, CategoryId = categoryId };
+            var res = await _exerciseServices.UpdateAsync(dto);
 
-            return Ok(result);
+            return Ok(res);
         }
 
         [HttpDelete("DeleteExercise/{id}")]
+        [AllowAnonymous]
         public async Task<ObjectResult> DeleteExercises([FromRoute] int id)
         {
-            Exercise result = await _exerciseServices.GetByIdAsync(id);
+            ExerciseDto result = await _exerciseServices.GetByIdAsync(id);
             await _exerciseServices.DeleteAsync(result);
 
             return Ok(result);
@@ -130,45 +142,50 @@ namespace AllNotes.WebApi.Controllers
 
         #region Series
         [HttpGet("GetSeries")]
+        [AllowAnonymous]
         public async Task<ObjectResult> GetAllSeriesAsync()
         {
-            IList<Series> result = await _seriesServices.GetAllAsync();
+            IList<SeriesDto> result = await _seriesServices.GetAllAsync();
             return Ok(result);
         }
 
         [HttpGet("GetSeries/{id}")]
+        [AllowAnonymous]
         public async Task<ObjectResult> GetSeriesAsync([FromRoute] int id)
         {
-            Series result = await _seriesServices.GetByIdAsync(id);
+            SeriesDto result = await _seriesServices.GetByIdAsync(id);
             return Ok(result);
         }
 
-        [HttpPost("AddSeries")]
-        public async Task<ObjectResult> AddSeriesAsync([FromBody] int repeats, float weights, int exerciseId)
-        {
-            Series result = await _seriesServices.CreateAsync(repeats, weights, exerciseId);
-            return Ok(result);
-        }
+        //[HttpPost("AddSeries")]
+        //[AllowAnonymous]
+        //public async Task<ObjectResult> AddSeriesAsync([FromBody] int repeats, float weights, int exerciseId)
+        //{
+        //    Series result = await _seriesServices.CreateAsync(repeats, weights, exerciseId);
+        //    return Ok(result);
+        //}
 
         [HttpPut("UpdateSeries/{id}")]
-        public async Task<ObjectResult> UpdateSeriesAsync([FromRoute] int id, [FromBody] int repeats, float weights, int exerciseId)
+        [AllowAnonymous]
+        public async Task<ObjectResult> UpdateSeriesAsync([FromRoute] int id, [FromBody] SeriesDto dto)
         {
-            Series result = await _seriesServices.GetByIdAsync(id);
+            SeriesDto result = await _seriesServices.GetByIdAsync(id);
             if (result == null)
             {
                 return BadRequest(new { message = "Series not available" });
             }
 
-            var series = new Series { Id = result.Id, Repeats = repeats, Weights = weights, ExerciseId = exerciseId };
-            await _seriesServices.UpdateAsync(series);
+            //var series = new Series { Id = result.Id, Repeats = repeats, Weights = weights, ExerciseId = exerciseId };
+            var res = await _seriesServices.UpdateAsync(dto);
 
-            return Ok(result);
+            return Ok(res);
         }
 
         [HttpDelete("DeleteSeries/{id}")]
+        [AllowAnonymous]
         public async Task<ObjectResult> DeleteSeries([FromRoute] int id)
         {
-            Series result = await _seriesServices.GetByIdAsync(id);
+            SeriesDto result = await _seriesServices.GetByIdAsync(id);
             await _seriesServices.DeleteAsync(result);
 
             return Ok(result);

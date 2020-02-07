@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using AllNotes.Domain.EF.AllNotesContext;
 using AllNotes.Domain.Models.Memo;
 using AllNotes.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
+using AllNotes.Domain.Dtos;
 
 namespace AllNotes.WebApi.Controllers
 {
@@ -22,60 +24,62 @@ namespace AllNotes.WebApi.Controllers
             _noteServices = noteServices;
         }
 
-        // GET: api/Notes
-        [HttpGet]
+        #region Notes
+        [HttpGet("GetNotes")]
+        [AllowAnonymous]
         public async Task<ObjectResult> GetAllNotesAsync()
         {
-            IList<Note> result = await _noteServices.GetAllAsync();
+            IList<NoteDto> result = await _noteServices.GetAllAsync();
 
             return Ok(result);
         }
 
-        // GET: api/Notes/5
-        [HttpGet("{id}")]
+        
+        [HttpGet("GetNotes/{id}")]
+        [AllowAnonymous]
         public async Task<ObjectResult> GetNoteAsync([FromRoute] int id)
         {
-            Note result = await _noteServices.GetByIdAsync(id);
+            NoteDto result = await _noteServices.GetByIdAsync(id);
 
             return Ok(result);
         }
 
-        [HttpPost]
-        public async Task<ObjectResult> AddCategoryAsync([FromBody] string name, string description)
+        [HttpPost("CreateNote")]
+        [AllowAnonymous]
+        public async Task<ObjectResult> AddNotesAsync([FromBody] NoteDto dto)
         {
 
-            Note result = await _noteServices.CreateAsync(name, description);
+            NoteDto result = await _noteServices.CreateAsync(dto);
 
             return Ok(result);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ObjectResult> UpdateCategoryAsync([FromRoute] int id, [FromBody] string name, string description)
+        [HttpPut("UpdateNote/{id}")]
+        [AllowAnonymous]
+        public async Task<ObjectResult> UpdateNotesAsync([FromRoute] int id, [FromBody] NoteDto dto )
         {
-            Note result = await _noteServices.GetByIdAsync(id);
+            NoteDto result = await _noteServices.GetByIdAsync(id);
             if (result == null)
             {
                 return BadRequest(new { message = "Note not available" });
             }
 
-            var note = new Note { Id = result.Id, Name = name, Description = description };
-            await _noteServices.UpdateAsync(note);
+            //var note = new Note { Id = result.Id, Name = name, Description = description };
+            var res = await _noteServices.UpdateAsync(dto);
 
-            return Ok(result);
+            return Ok(res);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteNote/{id}")]
+        [AllowAnonymous]
         public async Task<ObjectResult> DeleteCategory([FromRoute] int id)
         {
-            Note result = await _noteServices.GetByIdAsync(id);
+            NoteDto result = await _noteServices.GetByIdAsync(id);
             await _noteServices.DeleteAsync(result);
 
             return Ok(result);
         }
 
-        //private bool NoteExists(int id)
-        //{
-        //    return _context.Notes.Any(e => e.Id == id);
-        //}
+        #endregion
     }
 }

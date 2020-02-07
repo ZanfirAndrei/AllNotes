@@ -1,4 +1,5 @@
-﻿using AllNotes.Domain.EF.Wrapper;
+﻿using AllNotes.Domain.Dtos;
+using AllNotes.Domain.EF.Wrapper;
 using AllNotes.Domain.Models.Memo;
 using System;
 using System.Collections.Generic;
@@ -10,10 +11,10 @@ namespace AllNotes.Services.IServices
     public interface INoteServices : IBaseServices
     {
         IWrapperRepository WrapperRepository { get; }
-        Task<IList<Note>> GetAllAsync();
-        Task<Note> GetByIdAsync(int id);
-        Task<Note> CreateAsync(string name, string description);
-        Task<Note> UpdateAsync(Note note);
-        Task<Note> DeleteAsync(Note note);
+        Task<IList<NoteDto>> GetAllAsync();
+        Task<NoteDto> GetByIdAsync(int id);
+        Task<NoteDto> CreateAsync(NoteDto note);
+        Task<NoteDto> UpdateAsync(NoteDto note);
+        Task<NoteDto> DeleteAsync(NoteDto note);
     }
 }
