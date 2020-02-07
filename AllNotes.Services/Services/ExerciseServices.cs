@@ -32,12 +32,8 @@ namespace AllNotes.Services.Services
             return result;
         }
 
-        public async Task<Exercise> CreateAsync(string name, string description, int categoryId)
+        public async Task<Exercise> CreateAsync(Exercise exercise)
         {
-            Exercise exercise = new Exercise();
-            exercise.Name = name;
-            exercise.Description = description;
-            exercise.CategoryId = categoryId;
             var result = await WrapperRepository.Exercise.CreateAsync(exercise);
             await base.CommitChanges();
 
@@ -50,6 +46,10 @@ namespace AllNotes.Services.Services
             result.Name = exercise.Name;
             result.Description = exercise.Description;
             result.CategoryId = exercise.CategoryId;
+            result.ScheduleId = exercise.ScheduleId;
+            result.UserId = exercise.UserId;
+            if (exercise.Series != null)
+                result.Series = exercise.Series;
             await base.CommitChanges();
 
             return result;

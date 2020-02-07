@@ -29,11 +29,13 @@ namespace AllNotes.WebApi.Controllers
         public NoteController(INoteServices noteServices, 
                               ICheckBoxServices checkBoxServices,
                               IScheduleServices scheduleServices,
+                              UserManager<User> userManager,
                               IMapper mapper)
         {
             _noteServices = noteServices;
             _checkBoxServices = checkBoxServices;
             _scheduleServices = scheduleServices;
+            _userManager = userManager;
             _mapper = mapper;
         }
 
@@ -68,13 +70,12 @@ namespace AllNotes.WebApi.Controllers
         public async Task<ObjectResult> AddNoteAsync([FromBody] NoteDto dto)
         {
             //Note result = await _noteServices.CreateAsync(name, description);
-            try
-            {
+            //try
+            //{
                 var note = _mapper.Map<NoteDto, Note>(dto);
 
-                var userId = _userManager.GetUserId(User);
-                note.UserId = userId;
-                //string a = User.Identity.Name;
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                note.UserId = user.Id;
 
                 if (note.Schedule != null)
                 {
@@ -100,29 +101,28 @@ namespace AllNotes.WebApi.Controllers
                 {
                     foreach (CheckBoxDto i in dto.CheckBoxes)
                     {
-                        await _checkBoxServices.CreateAsync(i.Name, result.Id);
+                        await _checkBoxServices.CreateAsync(i.Name, -1, result.Id);
                     }
                 }
 
                 return Ok(_mapper.Map<Note, NoteDto>(result));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    return BadRequest(new { message = ex.Message });
+            //}
         }
 
         [HttpPut("UpdateNote/{id}")]
         [AllowAnonymous]
         public async Task<ObjectResult> UpdateNoteAsync([FromRoute] int id, [FromBody] NoteDto dto)
         {
-            try
-            {
+            //try
+            //{
                 var note = _mapper.Map<NoteDto, Note>(dto);
 
-                var userId = _userManager.GetUserId(User);
-                note.UserId = userId;
-                //string a = User.Identity.Name;
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                note.UserId = user.Id;
 
                 if (note.Schedule != null)
                 {
@@ -157,16 +157,16 @@ namespace AllNotes.WebApi.Controllers
                 {
                     foreach (CheckBoxDto i in dto.CheckBoxes)
                     {
-                        await _checkBoxServices.CreateAsync(i.Name, result.Id);
+                        await _checkBoxServices.CreateAsync(i.Name, -1, result.Id);
                     }
                 }
 
                 return Ok(_mapper.Map<Note, NoteDto>(result));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    return BadRequest(new { message = ex.Message });
+            //}
         }
 
         [HttpDelete("DeleteNote/{id}")]

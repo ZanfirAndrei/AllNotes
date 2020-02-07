@@ -12,7 +12,7 @@ namespace AllNotes.Services.IServices
         IWrapperRepository WrapperRepository { get; }
         Task<IList<CheckBox>> GetAllAsync();
         Task<CheckBox> GetByIdAsync(int id);
-        Task<CheckBox> CreateAsync(string name, int checkListId);
+        Task<CheckBox> CreateAsync(string name, int checkListId, int noteId);
         Task<CheckBox> UpdateAsync(CheckBox note);
         Task<CheckBox> DeleteAsync(CheckBox note);
     }

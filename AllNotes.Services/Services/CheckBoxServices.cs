@@ -32,12 +32,23 @@ namespace AllNotes.Services.Services
             return result;
         }
 
-        public async Task<CheckBox> CreateAsync(string name, int checkListId)
+        public async Task<CheckBox> CreateAsync(string name, int checkListId, int noteId)
         {
             CheckBox checkBox = new CheckBox();
             checkBox.Name = name;
             checkBox.IsChecked = false;
-            checkBox.CheckListId = checkListId;
+            if (checkListId == -1){
+                checkBox.CheckListId = null;
+            }
+            else{
+                checkBox.CheckListId = checkListId;
+            }
+            if (checkListId == -1) { 
+                checkBox.NoteId = null;
+            }
+            else { 
+                checkBox.NoteId = noteId;
+            }
             var result = await WrapperRepository.CheckBox.CreateAsync(checkBox);
             await base.CommitChanges();
 

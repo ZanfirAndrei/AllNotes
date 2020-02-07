@@ -20,9 +20,6 @@ namespace AllNotes.Domain.EF.AllNotesContextModelConfigurations
             builder.HasMany(c => c.CheckLists)
                 .WithOne(c => c.Schedule)
                 .HasForeignKey(b => b.ScheduleId);
-            builder.HasMany(c => c.CheckBoxes)
-                .WithOne(c => c.Schedule)
-                .HasForeignKey(b => b.ScheduleId);
             builder.HasMany(c => c.Notes)
                 .WithOne(c => c.Schedule)
                 .HasForeignKey(b => b.ScheduleId);

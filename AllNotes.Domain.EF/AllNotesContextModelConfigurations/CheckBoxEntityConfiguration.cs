@@ -14,9 +14,6 @@ namespace AllNotes.Domain.EF.AllNotesContextModelConfigurations
             builder.HasKey(c => c.Id);
             builder.HasIndex(c => c.Id);
             builder.Property(x => x.Id).ValueGeneratedOnAdd();
-            builder.HasOne(c => c.Schedule)
-                .WithMany(c => c.CheckBoxes)
-                .HasForeignKey(c => c.ScheduleId);
             builder.HasOne(c => c.Note)
                 .WithMany(c => c.CheckBoxes)
                 .HasForeignKey(c => c.NoteId);

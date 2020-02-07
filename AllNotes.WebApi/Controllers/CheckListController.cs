@@ -75,9 +75,9 @@ namespace AllNotes.WebApi.Controllers
 
                 var user = await _userManager.FindByNameAsync(User.Identity.Name);
                 checkList.UserId = user.Id;
-            //string a = User.Identity.Name;
+            
 
-            if (checkList.Schedule != null)
+                if (checkList.Schedule != null)
                 {
                     var schedule = _scheduleServices.GetByDate(checkList.Schedule.Date);
                     if (schedule != null)
@@ -101,7 +101,7 @@ namespace AllNotes.WebApi.Controllers
                 {
                     foreach (CheckBoxDto i in dto.CheckBoxes)
                     {
-                        await _checkBoxServices.CreateAsync(i.Name, result.Id);
+                        await _checkBoxServices.CreateAsync(i.Name, result.Id, -1);
                     }
                 }
 
@@ -122,9 +122,8 @@ namespace AllNotes.WebApi.Controllers
             {
                 var checkList = _mapper.Map<CheckListDto, CheckList>(dto);
 
-                var userId = _userManager.GetUserId(User);
-                checkList.UserId = userId;
-                //string a = User.Identity.Name;
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                checkList.UserId = user.Id;
 
                 if (checkList.Schedule != null)
                 {
@@ -159,7 +158,7 @@ namespace AllNotes.WebApi.Controllers
                 {
                     foreach (CheckBoxDto i in dto.CheckBoxes)
                     {
-                        await _checkBoxServices.CreateAsync(i.Name, result.Id);
+                        await _checkBoxServices.CreateAsync(i.Name, result.Id, -1);
                     }
                 }
 

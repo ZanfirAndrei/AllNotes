@@ -12,18 +12,12 @@ namespace AllNotes.Services.Services
     public class CheckListServices : BaseServices, ICheckListServices
     {
         public IWrapperRepository WrapperRepository { get; }
-        //public ICheckBoxServices CheckBoxServices { get; }
-        //public IScheduleServices ScheduleServices { get; }
 
         public CheckListServices(Domain.EF.AllNotesContext.AllNotesDbContext context, 
                                     IWrapperRepository wrapperRepository
-                                    //ICheckBoxServices checkBoxServices,
-                                    //IScheduleServices scheduleServices
             ) : base(context)
         {
             WrapperRepository = wrapperRepository;
-            //CheckBoxServices = checkBoxServices;
-            //ScheduleServices = scheduleServices;
         }
 
         public async Task<IList<CheckList>> GetAllAsync()

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllNotes.Domain.Dtos;
+using AllNotes.Domain.Models;
 using AllNotes.Domain.Models.Sport;
 using AllNotes.Services.IServices;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AllNotes.WebApi.Controllers
@@ -19,17 +21,23 @@ namespace AllNotes.WebApi.Controllers
         private readonly ICategoryServices _categoryServices;
         private readonly IExerciseServices _exerciseServices;
         private readonly ISeriesServices _seriesServices;
+        private readonly IScheduleServices _scheduleServices;
+        private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
 
 
         public ExerciseController(ICategoryServices categoryServices, 
                                   IExerciseServices exerciseServices,
-                                  ISeriesServices seriesServices, 
+                                  ISeriesServices seriesServices,
+                                  IScheduleServices scheduleServices,
+                                  UserManager<User> userManager,
                                   IMapper mapper)
         {
             _categoryServices = categoryServices;
             _exerciseServices = exerciseServices;
             _seriesServices = seriesServices;
+            _scheduleServices = scheduleServices;
+            _userManager = userManager;
             _mapper = mapper;
         }
 
@@ -54,31 +62,110 @@ namespace AllNotes.WebApi.Controllers
         public async Task<ObjectResult> GetExercisesAsync([FromRoute] int id)
         {
             Exercise result = await _exerciseServices.GetByIdAsync(id);
-            return Ok(result);
+            return Ok(_mapper.Map<Exercise, ExerciseDto>(result));
         }
 
         [HttpPost("AddExercise")]
         [AllowAnonymous]
-        public async Task<ObjectResult> AddExercisesAsync([FromBody] string name, string desc, int categoryId)
+        public async Task<ObjectResult> AddExercisesAsync([FromBody] ExerciseDto dto)
         {
-            Exercise result = await _exerciseServices.CreateAsync(name,desc,categoryId);
-            return Ok(result);
+            //try
+            //{
+                Exercise exercise = _mapper.Map<ExerciseDto, Exercise>(dto);
+
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                exercise.UserId = user.Id;
+
+                if (exercise.Schedule != null)
+                {
+                    var schedule = _scheduleServices.GetByDate(exercise.Schedule.Date);
+                    if (schedule != null)
+                    {
+                        exercise.ScheduleId = schedule.Id;
+                    }
+                    else
+                    {
+                        var resultS = await _scheduleServices.CreateAsync(exercise.Schedule.Date.ToString());
+                        exercise.ScheduleId = resultS.Id;
+                    }
+                }
+                else
+                {
+                    exercise.ScheduleId = null;
+                }
+
+                Exercise result = await _exerciseServices.CreateAsync(exercise);
+                
+                if (result.Series.Count > 0)
+                {
+                    foreach (SeriesDto i in dto.Series)
+                    {
+                        await _seriesServices.CreateAsync(i.Repeats, i.Weights, result.Id);
+                    }
+                }
+
+                return Ok(_mapper.Map<Exercise, ExerciseDto>(result));
+            //}
+            //catch (Exception ex)
+            //{
+            //    return BadRequest(new { message = ex.Message });
+            //}
         }
 
         [HttpPut("UpdateExercise/{id}")]
         [AllowAnonymous]
-        public async Task<ObjectResult> UpdateExercisesAsync([FromRoute] int id, [FromBody] string name, string description, int categoryId)
+        public async Task<ObjectResult> UpdateExercisesAsync([FromRoute] int id, [FromBody] ExerciseDto dto)
         {
-            Exercise result = await _exerciseServices.GetByIdAsync(id);
-            if (result == null)
-            {
-                return BadRequest(new { message = "Exercise not available" });
-            }
+            //try
+            //{
+                Exercise exercise = _mapper.Map<ExerciseDto, Exercise>(dto);
 
-            var exercise = new Exercise { Id = result.Id, Name = name, Description = description, CategoryId = categoryId };
-            await _exerciseServices.UpdateAsync(exercise);
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                exercise.UserId = user.Id;
 
-            return Ok(result);
+                if (exercise.Schedule != null)
+                {
+                    var schedule = _scheduleServices.GetByDate(exercise.Schedule.Date);
+                    if (schedule != null)
+                    {
+                        exercise.ScheduleId = schedule.Id;
+                    }
+                    else
+                    {
+                        var resultS = await _scheduleServices.CreateAsync(exercise.Schedule.Date.ToString());
+                        exercise.ScheduleId = resultS.Id;
+                    }
+                }
+                else
+                {
+                    exercise.ScheduleId = null;
+                }
+
+                Exercise result = await _exerciseServices.UpdateAsync(exercise);
+
+                IList<Series> series = await _seriesServices.GetAllAsync();
+                foreach (Series i in series)
+                {
+                    if (i.ExerciseId == result.Id)
+                    {
+                        await _seriesServices.DeleteAsync(i);
+                    }
+                }
+
+                if (result.Series.Count > 0)
+                {
+                    foreach (SeriesDto i in dto.Series)
+                    {
+                        await _seriesServices.CreateAsync(i.Repeats, i.Weights , result.Id);
+                    }
+                }
+
+                return Ok(_mapper.Map<Exercise, ExerciseDto>(result));
+            //}
+            //catch (Exception ex)
+            //{
+            //    return BadRequest(new { message = ex.Message });
+            //}
         }
 
         [HttpDelete("DeleteExercise/{id}")]
