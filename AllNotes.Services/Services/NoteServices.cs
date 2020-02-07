@@ -32,12 +32,8 @@ namespace AllNotes.Services.Services
             return result;
         }
 
-        public async Task<Note> CreateAsync(string name, string description)
+        public async Task<Note> CreateAsync(Note note)
         {
-            Note note = new Note();
-            note.Name = name;
-            note.Description = description;
-            note.Timestamp = DateTime.Now;
             var result = await WrapperRepository.Note.CreateAsync(note);
             await base.CommitChanges();
 
@@ -50,10 +46,14 @@ namespace AllNotes.Services.Services
             result.Name = note.Name;
             result.Description = note.Description;
             result.Timestamp = DateTime.Now;
+            result.ScheduleId = note.ScheduleId;
+            result.UserId = note.UserId;
+            if (note.CheckBoxes != null)
+                result.CheckBoxes = note.CheckBoxes; 
             await base.CommitChanges();
 
             return result;
-        }
+    }
 
         public async Task<Note> DeleteAsync(Note note)
         {

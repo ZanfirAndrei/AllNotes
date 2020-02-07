@@ -1,4 +1,5 @@
 ﻿using AllNotes.Domain.Dtos;
+using AllNotes.Domain.EF.Users;
 using AllNotes.Domain.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -57,17 +58,21 @@ namespace AllNotes.WebApi.Controllers
                 };
 
                 result = await _userManager.CreateAsync(user, model.Password);
-                //if( !await _roleManager.RoleExistsAsync(UsersRoles.Manager))
+                //if (!await _roleManager.RoleExistsAsync(UsersRoles.Manager))
                 //{
-                //    await _roleManager.CreateAsync(new IdentityRole( UsersRoles.Manager));
+                //    await _roleManager.CreateAsync(new IdentityRole(UsersRoles.Manager));
 
                 //}
                 //if (!await _roleManager.RoleExistsAsync(UsersRoles.Admin))
                 //{
                 //    await _roleManager.CreateAsync(new IdentityRole(UsersRoles.Admin));
+                //}
+                //if (!await _roleManager.RoleExistsAsync(UsersRoles.User))
+                //{
+                //    await _roleManager.CreateAsync(new IdentityRole(UsersRoles.User));
 
                 //}
-                //await _userManager.AddToRoleAsync(user, UsersRoles.User);
+                await _userManager.AddToRoleAsync(user, UsersRoles.User);
                 if (result.Succeeded)
                 {
                     return new ResultDto

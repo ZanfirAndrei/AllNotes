@@ -12,6 +12,7 @@ namespace AllNotes.Services.IServices
         IWrapperRepository WrapperRepository { get; }
         Task<IList<Schedule>> GetAllAsync();
         Task<Schedule> GetByIdAsync(int id);
+        Task<Schedule> GetByDate(DateTime date);
         Task<Schedule> CreateAsync(string dateTime);
         Task<Schedule> DeleteAsync(Schedule schedule);
     }

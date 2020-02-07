@@ -1,7 +1,6 @@
 ﻿using AllNotes.Domain.EF.Wrapper;
 using AllNotes.Domain.Models;
 using AllNotes.Domain.Models.Memo;
-using AllNotes.Models;
 using AllNotes.Services.IServices;
 using System;
 using System.Collections.Generic;
@@ -13,18 +12,18 @@ namespace AllNotes.Services.Services
     public class CheckListServices : BaseServices, ICheckListServices
     {
         public IWrapperRepository WrapperRepository { get; }
-        public ICheckBoxServices CheckBoxServices { get; }
-        public IScheduleServices ScheduleServices { get; }
+        //public ICheckBoxServices CheckBoxServices { get; }
+        //public IScheduleServices ScheduleServices { get; }
 
         public CheckListServices(Domain.EF.AllNotesContext.AllNotesDbContext context, 
-                                    IWrapperRepository wrapperRepository, 
-                                    ICheckBoxServices checkBoxServices,
-                                    IScheduleServices scheduleServices
+                                    IWrapperRepository wrapperRepository
+                                    //ICheckBoxServices checkBoxServices,
+                                    //IScheduleServices scheduleServices
             ) : base(context)
         {
             WrapperRepository = wrapperRepository;
-            CheckBoxServices = checkBoxServices;
-            ScheduleServices = scheduleServices;
+            //CheckBoxServices = checkBoxServices;
+            //ScheduleServices = scheduleServices;
         }
 
         public async Task<IList<CheckList>> GetAllAsync()
@@ -41,33 +40,10 @@ namespace AllNotes.Services.Services
             return result;
         }
 
-        public async Task<CheckList> CreateAsync(CheckListDto dto)
+        public async Task<CheckList> CreateAsync(CheckList checkList)
         {
-            CheckList checkList = new CheckList();
-            checkList.Name = dto.Name;
-            checkList.TimeStamp = DateTime.Now;
-            checkList.IsComplete = false;
-
-            if (dto.Schedule.Date != null)
-            {
-                var resultS = await ScheduleServices.CreateAsync(dto.Schedule.Date.ToString());
-                checkList.ScheduleId = resultS.Id;
-            }
-            else
-            {
-                checkList.ScheduleId = null;
-            }
-
             var result = await WrapperRepository.CheckList.CreateAsync(checkList);
             await base.CommitChanges();
-
-            if(dto.CheckBoxes.Count > 0)
-            {
-                foreach(CheckBoxDto i in dto.CheckBoxes)
-                {
-                    await CheckBoxServices.CreateAsync(i.Name, result.Id);
-                }
-            }
 
             return result;
         }
@@ -78,6 +54,10 @@ namespace AllNotes.Services.Services
             result.Name = checkList.Name;
             result.TimeStamp = DateTime.Now;
             result.IsComplete = checkList.IsComplete;
+            result.ScheduleId = checkList.ScheduleId;
+            result.UserId = checkList.UserId;
+            if (checkList.CheckBoxes != null)
+                result.CheckBoxes = checkList.CheckBoxes;
             await base.CommitChanges();
 
             return result;

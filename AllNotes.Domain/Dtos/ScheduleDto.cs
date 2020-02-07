@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace AllNotes.Domain.Dtos
-{ 
+{
     public class ScheduleDto
     {
         public int Id { get; set; }

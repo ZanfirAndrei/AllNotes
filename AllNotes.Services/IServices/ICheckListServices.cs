@@ -11,11 +11,12 @@ namespace AllNotes.Services.IServices
     public interface ICheckListServices : IBaseServices
     {
         IWrapperRepository WrapperRepository { get; }
-        Task<IList<CheckListDto>> GetAllAsync(); 
-        Task<CheckListDto> GetByIdAsync(int id);
-        Task<CheckListDto> CreateAsync(CheckListDto dto);
-        Task<CheckListDto> UpdateAsync(CheckListDto note);
-        Task<CheckListDto> DeleteAsync(CheckListDto note);
+        Task<IList<CheckList>> GetAllAsync(); 
+        Task<CheckList> GetByIdAsync(int id);
+        Task<CheckList> CreateAsync(CheckList checkList);
+        Task<CheckList> UpdateAsync(CheckList checkList);
+        Task<CheckList> DeleteAsync(CheckList checkList);
+
     }
     
 }

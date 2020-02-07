@@ -11,10 +11,10 @@ namespace AllNotes.Services.IServices
     public interface INoteServices : IBaseServices
     {
         IWrapperRepository WrapperRepository { get; }
-        Task<IList<NoteDto>> GetAllAsync();
-        Task<NoteDto> GetByIdAsync(int id);
-        Task<NoteDto> CreateAsync(NoteDto note);
-        Task<NoteDto> UpdateAsync(NoteDto note);
-        Task<NoteDto> DeleteAsync(NoteDto note);
+        Task<IList<Note>> GetAllAsync();
+        Task<Note> GetByIdAsync(int id);
+        Task<Note> CreateAsync(Note note);
+        Task<Note> UpdateAsync(Note note);
+        Task<Note> DeleteAsync(Note note);
     }
 }
