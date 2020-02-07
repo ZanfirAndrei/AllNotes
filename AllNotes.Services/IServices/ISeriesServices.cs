@@ -10,10 +10,10 @@ namespace AllNotes.Services.IServices
     public interface ISeriesServices : IBaseServices
     {
         IWrapperRepository WrapperRepository { get; }
-        //Task<IList<Series>> GetAllAsync();
-        //Task<Series> GetByIdAsync(int id);
-        //Task<Series> CreateAsync(string name);
-        //Task<Series> UpdateAsync(Series series);
-        //Task<Series> DeleteAsync(Series series);
+        Task<IList<Series>> GetAllAsync();
+        Task<Series> GetByIdAsync(int id);
+        Task<Series> CreateAsync(int repeats, float weights, int exerciseId);
+        Task<Series> UpdateAsync(Series series);
+        Task<Series> DeleteAsync(Series series);
     }
 }
