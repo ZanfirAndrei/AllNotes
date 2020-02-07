@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AllNotes.Domain.Models;
 using AllNotes.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,8 @@ namespace AllNotes.WebApi.Controllers
         }
 
         [HttpGet("GetAllSchedules")]
+        //[Authorize(Policy = "User")]
+        [Authorize]
         public async Task<ObjectResult> GetAllSchedulesAsync()
         {
             IList<Schedule> result = await _scheduleServices.GetAllAsync();
@@ -34,7 +37,7 @@ namespace AllNotes.WebApi.Controllers
             Schedule result = await _scheduleServices.GetByIdAsync(id);
 
             return Ok(result);
-        }
+        } 
 
         [HttpPost("AddSchedule")]
         public async Task<ObjectResult> AddScheduleAsync([FromBody] string date)

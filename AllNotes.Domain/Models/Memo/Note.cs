@@ -11,14 +11,11 @@ namespace AllNotes.Domain.Models.Memo
         public string Name { get; set; }
         public string? Description { get; set; }
         public DateTime Timestamp { get; set; }
-        //public int UserId { get; set; }
+        public string? UserId { get; set; }
         public int? ScheduleId { get; set; }
-        //public virtual User User { get; set; }
+        public virtual User User { get; set; }
         public virtual Schedule Schedule { get; set; }
         public virtual ICollection<CheckBox> CheckBoxes { get; set; }
 
-        
-        
-        
     }
 }
