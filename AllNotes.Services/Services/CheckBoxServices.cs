@@ -24,5 +24,43 @@ namespace AllNotes.Services.Services
 
             return result;
         }
+
+        public async Task<CheckBox> GetByIdAsync(int id)
+        {
+            var result = await WrapperRepository.CheckBox.GetByIdAsync(id);
+
+            return result;
+        }
+
+        public async Task<CheckBox> CreateAsync(string name, int checkListId)
+        {
+            CheckBox checkBox = new CheckBox();
+            checkBox.Name = name;
+            checkBox.IsChecked = false;
+            checkBox.CheckListId = checkListId;
+            var result = await WrapperRepository.CheckBox.CreateAsync(checkBox);
+            await base.CommitChanges();
+
+            return result;
+        }
+
+        public async Task<CheckBox> UpdateAsync(CheckBox checkBox)
+        {
+            var result = await WrapperRepository.CheckBox.GetByIdAsync(checkBox.Id);
+            result.Name = checkBox.Name;
+            result.IsChecked = checkBox.IsChecked;
+            result.CheckListId = checkBox.CheckListId;
+            await base.CommitChanges();
+
+            return result;
+        }
+
+        public async Task<CheckBox> DeleteAsync(CheckBox checkBox)
+        {
+            var result = WrapperRepository.CheckBox.Delete(checkBox);
+            await base.CommitChanges();
+
+            return result;
+        }
     }
 }

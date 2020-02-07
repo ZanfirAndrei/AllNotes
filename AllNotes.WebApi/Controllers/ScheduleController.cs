@@ -20,18 +20,25 @@ namespace AllNotes.WebApi.Controllers
         {
             _scheduleServices = scheduleServices;
         }
+        
+        [HttpGet("GetSchedules")]
 
-        [HttpGet("GetAllSchedules")]
         //[Authorize(Policy = "User")]
         [Authorize]
         public async Task<ObjectResult> GetAllSchedulesAsync()
         {
-            IList<Schedule> result = await _scheduleServices.GetAllAsync();
-
-            return Ok(result);
+            try
+            {
+                IList<Schedule> result = await _scheduleServices.GetAllAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }   
         }
 
-        [HttpGet("GetSchedule/{id}")]
+        [HttpGet("GetSchedules/{id}")]
         public async Task<ObjectResult> GetScheduleAsync([FromRoute] int id)
         {
             Schedule result = await _scheduleServices.GetByIdAsync(id);
@@ -42,19 +49,30 @@ namespace AllNotes.WebApi.Controllers
         [HttpPost("AddSchedule")]
         public async Task<ObjectResult> AddScheduleAsync([FromBody] string date)
         {
-
-            Schedule result = await _scheduleServices.CreateAsync(date);
-
-            return Ok(result);
+            try 
+            {
+                Schedule result = await _scheduleServices.CreateAsync(date);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpDelete("DeleteSchedule/{id}")]
         public async Task<ObjectResult> DeleteSchedule([FromRoute] int id)
         {
-            Schedule result = await _scheduleServices.GetByIdAsync(id);
-            await _scheduleServices.DeleteAsync(result);
-
-            return Ok(result);
+            try
+            {
+                Schedule result = await _scheduleServices.GetByIdAsync(id);
+                await _scheduleServices.DeleteAsync(result);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
 
