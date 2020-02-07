@@ -1,7 +1,10 @@
 ﻿using AllNotes.Domain.EF.AllNotesContext;
 using AllNotes.Domain.EF.Wrapper;
+using AllNotes.Domain.Models;
 using AllNotes.Services.IServices;
 using AllNotes.Services.Services;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +38,7 @@ namespace AllNotes.WebApi
             services.AddTransient<ISeriesServices, SeriesServices>();
             services.AddTransient<IExerciseServices, ExerciseServices>();
             services.AddTransient<IScheduleServices, ScheduleServices>();
+            //services.AddScoped<IUserStore<User>, UserOnlyStore<User, AllNotesDbContext>>();
         }
     }
 }
