@@ -16,10 +16,13 @@ namespace AllNotes.WebApi.AutoMappers
         {
             CreateMap<Schedule, ScheduleDto>().ReverseMap();
             CreateMap<CheckList, CheckListDto>().ReverseMap();
+            CreateMap<CheckBox, CheckBoxDto>().ReverseMap();
             CreateMap<Note, NoteDto>().ReverseMap();
             CreateMap<Exercise, ExerciseDto>().ReverseMap();
-            //CreateMap<Schedule, ScheduleDto>().ReverseMap();
-            //CreateMap<Schedule, ScheduleDto>().ReverseMap();
+            CreateMap<Category, CategoryDto>().ReverseMap();
+            CreateMap<Series, SeriesDto>().ReverseMap();
+            CreateMap<User, UserDto>().ReverseMap();
+            
         }
     }
 }

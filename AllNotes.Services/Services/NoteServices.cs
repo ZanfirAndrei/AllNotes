@@ -46,10 +46,14 @@ namespace AllNotes.Services.Services
             result.Name = note.Name;
             result.Description = note.Description;
             result.Timestamp = DateTime.Now;
+            result.ScheduleId = note.ScheduleId;
+            result.UserId = note.UserId;
+            if (note.CheckBoxes != null)
+                result.CheckBoxes = note.CheckBoxes; 
             await base.CommitChanges();
 
             return result;
-        }
+    }
 
         public async Task<Note> DeleteAsync(Note note)
         {

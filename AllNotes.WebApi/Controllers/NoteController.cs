@@ -78,7 +78,7 @@ namespace AllNotes.WebApi.Controllers
 
                 if (note.Schedule != null)
                 {
-                    var schedule = _scheduleServices.GetIdByDate(note.Schedule.Date);
+                    var schedule = _scheduleServices.GetByDate(note.Schedule.Date);
                     if (schedule != null)
                     {
                         note.ScheduleId = schedule.Id;
@@ -94,7 +94,7 @@ namespace AllNotes.WebApi.Controllers
                     note.ScheduleId = null;
                 }
 
-                CheckList result = await _noteServices.CreateAsync(note);
+                Note result = await _noteServices.CreateAsync(note);
 
                 if (result.CheckBoxes.Count > 0)
                 {
@@ -104,7 +104,7 @@ namespace AllNotes.WebApi.Controllers
                     }
                 }
 
-                return Ok(_mapper.Map<CheckList, CheckListDto>(result));
+                return Ok(_mapper.Map<Note, NoteDto>(result));
             }
             catch (Exception ex)
             {
@@ -114,18 +114,59 @@ namespace AllNotes.WebApi.Controllers
 
         [HttpPut("UpdateNote/{id}")]
         [AllowAnonymous]
-        public async Task<ObjectResult> UpdateNoteAsync([FromRoute] int id, [FromBody] string name, string description)
+        public async Task<ObjectResult> UpdateNoteAsync([FromRoute] int id, [FromBody] NoteDto dto)
         {
-            Note result = await _noteServices.GetByIdAsync(id);
-            if (result == null)
+            try
             {
-                return BadRequest(new { message = "Note not available" });
+                var note = _mapper.Map<NoteDto, Note>(dto);
+
+                var userId = _userManager.GetUserId(User);
+                note.UserId = userId;
+                //string a = User.Identity.Name;
+
+                if (note.Schedule != null)
+                {
+                    var schedule = _scheduleServices.GetByDate(note.Schedule.Date);
+                    if (schedule != null)
+                    {
+                        note.ScheduleId = schedule.Id;
+                    }
+                    else
+                    {
+                        var resultS = await _scheduleServices.CreateAsync(note.Schedule.Date.ToString());
+                        note.ScheduleId = resultS.Id;
+                    }
+                }
+                else
+                {
+                    note.ScheduleId = null;
+                }
+
+                Note result = await _noteServices.UpdateAsync(note);
+
+                IList<CheckBox> checkBoxes = await _checkBoxServices.GetAllAsync();
+                foreach (CheckBox i in checkBoxes)
+                {
+                    if (i.CheckListId == result.Id)
+                    {
+                        await _checkBoxServices.DeleteAsync(i);
+                    }
+                }
+
+                if (result.CheckBoxes.Count > 0)
+                {
+                    foreach (CheckBoxDto i in dto.CheckBoxes)
+                    {
+                        await _checkBoxServices.CreateAsync(i.Name, result.Id);
+                    }
+                }
+
+                return Ok(_mapper.Map<Note, NoteDto>(result));
             }
-
-            var note = new Note { Id = result.Id, Name = name, Description = description };
-            await _noteServices.UpdateAsync(note);
-
-            return Ok(result);
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpDelete("DeleteNote/{id}")]
@@ -137,10 +178,5 @@ namespace AllNotes.WebApi.Controllers
 
             return Ok(result);
         }
-
-        //private bool NoteExists(int id)
-        //{
-        //    return _context.Notes.Any(e => e.Id == id);
-        //}
     }
 }

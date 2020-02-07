@@ -29,11 +29,13 @@ namespace AllNotes.WebApi.Controllers
         public CheckListController(ICheckListServices checkListServices,
                                    ICheckBoxServices checkBoxServices,
                                    IScheduleServices scheduleServices,
+                                   UserManager<User> userManager,
                                    IMapper mapper)
         {
             _checkListServices = checkListServices;
             _checkBoxServices = checkBoxServices;
             _scheduleServices = scheduleServices;
+            _userManager = userManager;
             _mapper = mapper;
         }
 
@@ -67,17 +69,17 @@ namespace AllNotes.WebApi.Controllers
         [AllowAnonymous]
         public async Task<ObjectResult> AddCheckListAsync([FromBody] CheckListDto dto)
         {
-            try
-            {
-                var checkList = _mapper.Map<CheckListDto, CheckList>(dto);
+            //try
+            //{
+                CheckList checkList = _mapper.Map<CheckListDto, CheckList>(dto);
 
-                var userId = _userManager.GetUserId(User);
-                checkList.UserId = userId;
-                //string a = User.Identity.Name;
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                checkList.UserId = user.Id;
+            //string a = User.Identity.Name;
 
-                if (checkList.Schedule != null)
+            if (checkList.Schedule != null)
                 {
-                    var schedule = _scheduleServices.GetIdByDate(checkList.Schedule.Date);
+                    var schedule = _scheduleServices.GetByDate(checkList.Schedule.Date);
                     if (schedule != null)
                     {
                         checkList.ScheduleId = schedule.Id;
@@ -104,11 +106,11 @@ namespace AllNotes.WebApi.Controllers
                 }
 
                 return Ok(_mapper.Map<CheckList, CheckListDto>(result));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    return BadRequest(new { message = ex.Message });
+            //}
 
         }
 
@@ -126,7 +128,7 @@ namespace AllNotes.WebApi.Controllers
 
                 if (checkList.Schedule != null)
                 {
-                    var schedule = _scheduleServices.GetIdByDate(checkList.Schedule.Date);
+                    var schedule = _scheduleServices.GetByDate(checkList.Schedule.Date);
                     if (schedule != null)
                     {
                         checkList.ScheduleId = schedule.Id;

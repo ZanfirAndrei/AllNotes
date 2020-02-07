@@ -42,7 +42,6 @@ namespace AllNotes.Services.Services
                     return r;
                 }
             }
-
             return null;
         }
 
@@ -63,11 +62,6 @@ namespace AllNotes.Services.Services
             await base.CommitChanges();
 
             return result;
-        }
-
-        public Task<Schedule> GetIdByDate(DateTime date)
-        {
-            throw new NotImplementedException();
         }
     }
 }
